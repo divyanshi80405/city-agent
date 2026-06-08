@@ -6,6 +6,7 @@ export default function Home() {
 
   const [fileName, setFileName] = useState("");
   const [department, setDepartment] = useState("");
+  const [recommendation, setRecommendation] = useState("");
   const [processing, setProcessing] = useState(false);
   const [currentStep, setCurrentStep] = useState(0);
 
@@ -75,19 +76,31 @@ export default function Home() {
               setFileName(name);
             
               if (name.toLowerCase().includes("tax")) {
+
                 setDepartment("Tax Department");
+                setRecommendation("Check address records");
+
               }
 
               else if (name.toLowerCase().includes("insurance")) {
+
                 setDepartment("Health Department");
+                setRecommendation("Verify insurance eligibility");
+
               }
 
               else if (name.toLowerCase().includes("residence")) {
+
                 setDepartment("Registry Office");
+                setRecommendation("Update tax and insurance records");
+
               }
 
               else {
+
                 setDepartment("General Municipal Office");
+                setRecommendation("Manual review required");
+
               }
             }
           }}
@@ -168,7 +181,7 @@ export default function Home() {
 
               <p>✅ Department Agent: Routed to {department}</p>
 
-              <p>✅ Recommendation Agent: Suggested Tax Update</p>
+              <p>✅ Recommendation Agent: {recommendation}</p>
 
             </div>
 
