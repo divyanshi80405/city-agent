@@ -1,11 +1,25 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 export default function Home() {
 
   const [fileName, setFileName] = useState("");
   const [department, setDepartment] = useState("");
+  const [processing, setProcessing] = useState(false);
+
+  useEffect(() => {
+
+    if (processing) {
+
+      const timer = setTimeout(() => {
+        setProcessing(false);
+      }, 2000);
+
+      return () => clearTimeout(timer);
+    }
+
+  }, [processing]);
 
   return (
   <main className="min-h-screen flex flex-col items-center justify-center bg-gray-100 p-8">
@@ -35,6 +49,7 @@ export default function Home() {
             if (e.target.files?.[0]) {
 
               const name = e.target.files[0].name;
+              setProcessing(true);
 
               setFileName(name);
             
@@ -67,7 +82,21 @@ export default function Home() {
         </button>
       </>
 
-      {fileName && (
+      {processing ? (
+
+        <div className="mt-6 bg-yellow-100 p-6 rounded-lg">
+
+          <h2 className="text-xl font-bold text-black mb-4">
+            Agent Activity
+          </h2>
+
+          <p className="text-black">
+            ⏳ Agents are processing your document...
+          </p>
+
+        </div>
+
+      ) : fileName && (
         <div className="mt-6">
 
           <p className="text-blue-700 font-bold text-lg mb-6">
