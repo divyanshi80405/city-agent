@@ -91,6 +91,18 @@ export default function Home() {
 
                 if (response.ok) {
                   setUploadStatus("Upload Successful ✅");
+                  const analysisResponse = await fetch(
+                    "http://127.0.0.1:8000/analyze",
+                    {
+                      method: "POST",
+                      body: formData,
+                    }
+                  );
+
+                  const analysisData = await analysisResponse.json();
+
+                  setDepartment(analysisData.department);
+                  
                 } else {
                   setUploadStatus("Upload Failed ❌");
                 }
@@ -105,34 +117,7 @@ export default function Home() {
               setProcessing(true);
 
               setFileName(name);
-            
-              if (name.toLowerCase().includes("tax")) {
-
-                setDepartment("Tax Department");
-                setRecommendation("Check address records");
-
-              }
-
-              else if (name.toLowerCase().includes("insurance")) {
-
-                setDepartment("Health Department");
-                setRecommendation("Verify insurance eligibility");
-
-              }
-
-              else if (name.toLowerCase().includes("residence")) {
-
-                setDepartment("Registry Office");
-                setRecommendation("Update tax and insurance records");
-
-              }
-
-              else {
-
-                setDepartment("General Municipal Office");
-                setRecommendation("Manual review required");
-
-              }
+          
             }
           }}
         />
