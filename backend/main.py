@@ -1,5 +1,6 @@
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi import FastAPI, UploadFile, File
+import fitz
 import os
 
 app = FastAPI()
@@ -37,4 +38,37 @@ async def upload_file(file: UploadFile = File(...)):
     return {
         "filename": file.filename,
         "status": "uploaded successfully"
+    }
+
+@app.post("/analyze")
+async def analyze_file(file: UploadFile = File(...)):
+
+    pdf_bytes = await file.read()
+
+    document = fitz.open(
+        stream=pdf_bytes,
+        filetype="pdf"
+    )
+
+    text = ""
+
+    for page in document:
+        text += page.get_text()
+
+    department = "General Municipal Office"
+
+    lower_text = text.lower()
+
+    if any(word in lower_text for word in ["tax", "income", "declaration"]):
+        department = "Tax Department"
+
+    elif any(word in lower_text for word in ["insurance", "health", "medical"]):
+        department = "Health Department"
+
+    elif any(word in lower_text for word in ["residence", "address", "registration"]):
+        department = "Registry Office"
+
+    return {
+        "department": department,
+        "text": text[:1000]
     }
