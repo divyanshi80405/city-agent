@@ -5,6 +5,7 @@ import { useState } from "react";
 export default function Home() {
 
   const [fileName, setFileName] = useState("");
+  const [department, setDepartment] = useState("");
 
   return (
   <main className="min-h-screen flex flex-col items-center justify-center bg-gray-100 p-8">
@@ -29,9 +30,29 @@ export default function Home() {
           type="file"
           id="fileUpload"
           className="hidden"
+          
           onChange={(e) => {
             if (e.target.files?.[0]) {
-              setFileName(e.target.files[0].name);
+
+              const name = e.target.files[0].name;
+
+              setFileName(name);
+            
+              if (name.toLowerCase().includes("tax")) {
+                setDepartment("Tax Department");
+              }
+
+              else if (name.toLowerCase().includes("insurance")) {
+                setDepartment("Health Department");
+              }
+
+              else if (name.toLowerCase().includes("residence")) {
+                setDepartment("Registry Office");
+              }
+
+              else {
+                setDepartment("General Municipal Office");
+              }
             }
           }}
         />
@@ -67,7 +88,7 @@ export default function Home() {
 
               <p>✅ Validation Agent: Document verified</p>
 
-              <p>✅ Department Agent: Routed to Registry Office</p>
+              <p>✅ Department Agent: Routed to {department}</p>
 
               <p>✅ Recommendation Agent: Suggested Tax Update</p>
 
