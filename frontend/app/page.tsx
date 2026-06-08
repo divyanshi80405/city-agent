@@ -9,6 +9,7 @@ export default function Home() {
   const [recommendation, setRecommendation] = useState("");
   const [processing, setProcessing] = useState(false);
   const [currentStep, setCurrentStep] = useState(0);
+  const [uploadStatus, setUploadStatus] = useState("");
 
   useEffect(() => {
 
@@ -67,10 +68,40 @@ export default function Home() {
           id="fileUpload"
           className="hidden"
           
-          onChange={(e) => {
+          onChange={async (e) => {
             if (e.target.files?.[0]) {
 
               const name = e.target.files[0].name;
+              const file = e.target.files[0];
+
+              setUploadStatus("Uploading...");
+              const formData = new FormData();
+
+              formData.append("file", file);
+
+              try {
+
+                const response = await fetch(
+                  "http://127.0.0.1:8000/upload",
+                  {
+                    method: "POST",
+                    body: formData,
+                  }
+                );
+
+                if (response.ok) {
+                  setUploadStatus("Upload Successful ✅");
+                } else {
+                  setUploadStatus("Upload Failed ❌");
+                }
+
+              } catch (error) {
+
+                console.error("UPLOAD ERROR:", error);
+                setUploadStatus("Backend Not Reachable ❌");
+
+          }
+
               setProcessing(true);
 
               setFileName(name);
@@ -163,6 +194,10 @@ export default function Home() {
 
           <p className="text-blue-700 font-bold text-lg mb-6">
             Selected File: {fileName}
+          </p>
+
+          <p className="text-green-700 font-semibold">
+            {uploadStatus}
           </p>
 
           <div className="bg-gray-100 p-6 rounded-lg text-left">
