@@ -7,16 +7,37 @@ export default function Home() {
   const [fileName, setFileName] = useState("");
   const [department, setDepartment] = useState("");
   const [processing, setProcessing] = useState(false);
+  const [currentStep, setCurrentStep] = useState(0);
 
   useEffect(() => {
 
     if (processing) {
 
-      const timer = setTimeout(() => {
-        setProcessing(false);
+      setCurrentStep(1);
+
+      const step1 = setTimeout(() => {
+        setCurrentStep(2);
+      }, 1000);
+
+      const step2 = setTimeout(() => {
+        setCurrentStep(3);
       }, 2000);
 
-      return () => clearTimeout(timer);
+      const step3 = setTimeout(() => {
+        setCurrentStep(4);
+      }, 3000);
+
+      const step4 = setTimeout(() => {
+        setCurrentStep(5);
+        setProcessing(false);
+      }, 4000);
+
+      return () => {
+        clearTimeout(step1);
+        clearTimeout(step2);
+        clearTimeout(step3);
+        clearTimeout(step4);
+      };
     }
 
   }, [processing]);
@@ -90,9 +111,37 @@ export default function Home() {
             Agent Activity
           </h2>
 
-          <p className="text-black">
-            ⏳ Agents are processing your document...
-          </p>
+          <div className="space-y-3 text-black">
+
+            {currentStep > 1 ? (
+              <p>✅ Document Agent Complete</p>
+            ) : currentStep === 1 ? (
+              <p>⏳ Document Agent Processing...</p>
+            ) : null}
+
+            {currentStep > 2 ? (
+              <p>✅ Extraction Agent Complete</p>
+            ) : currentStep === 2 ? (
+              <p>⏳ Extraction Agent Processing...</p>
+            ) : null}
+
+            {currentStep > 3 ? (
+              <p>✅ Validation Agent Complete</p>
+            ) : currentStep === 3 ? (
+              <p>⏳ Validation Agent Processing...</p>
+            ) : null}
+
+            {currentStep > 4 ? (
+              <p>✅ Department Agent Complete</p>
+            ) : currentStep === 4 ? (
+              <p>⏳ Department Agent Processing...</p>
+            ) : null}
+
+            {currentStep === 5 ? (
+              <p>⏳ Recommendation Agent Processing...</p>
+            ) : null} 
+
+          </div>
 
         </div>
 
