@@ -25,6 +25,9 @@ export default function Home() {
   const [caseStatus, setCaseStatus] = useState("");
   const [priority, setPriority] = useState("");
   const [workflowGraph, setWorkflowGraph] = useState<string[]>([]);
+  const [caseQueue, setCaseQueue] = useState<
+    { id: string; status: string }[]
+  >([]);
 
   useEffect(() => {
     if (processing) {
@@ -136,6 +139,22 @@ export default function Home() {
               setCaseStatus("Processing Complete");
               setPriority("Medium");
 
+              const newCaseId =
+                "CA-" +
+                new Date().getFullYear() +
+                "-" +
+                Math.floor(1000 + Math.random() * 9000);
+
+              setCaseId(newCaseId);
+
+              setCaseQueue((prev) => [
+                ...prev,
+                {
+                  id: newCaseId,
+                  status: "Completed",
+                },
+              ]); 
+
 
               setProcessing(true);
             } catch (error) {
@@ -208,6 +227,32 @@ export default function Home() {
                 <p>🏢 Assigned Department: {department}</p>
 
               </div>
+
+              <div className="bg-orange-50 p-6 rounded-lg mt-6 text-left">
+
+                <h2 className="text-black font-bold text-xl mb-4">
+                  Municipal Case Queue
+                </h2>
+
+                <div className="space-y-2 text-black">
+
+                  {caseQueue.map((item, index) => (
+
+                    <p key={index}>
+                      📄 {item.id} - {item.status}
+                    </p>
+
+                  ))}
+
+                  <p className="font-semibold mt-4">
+                  Total Cases Managed: {caseQueue.length}
+                  </p>
+
+                </div>
+
+              </div>
+
+
 
               <div className="bg-gray-100 p-6 rounded-lg text-left">
                 <h2 className="text-black font-bold text-xl mb-4">Agent Activity</h2>
