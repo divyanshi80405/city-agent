@@ -17,10 +17,10 @@ export default function Home() {
   const [visitsSaved, setVisitsSaved] = useState(0);
   const [timeSaved, setTimeSaved] = useState("");
   const [taskStatuses, setTaskStatuses] = useState<any[]>([]);
-  const [activeCases, setActiveCases] = useState(128);
-  const [autoProcessed, setAutoProcessed] = useState(94);
-  const [departmentsCoordinated, setDepartmentsCoordinated] = useState(5);
-  const [hoursSaved, setHoursSaved] = useState(37);
+  const [activeCases, setActiveCases] = useState(0);
+  const [autoProcessed, setAutoProcessed] = useState(0);
+  const [departmentsCoordinated, setDepartmentsCoordinated] = useState(0);
+  const [hoursSaved, setHoursSaved] = useState(0);
   const [caseId, setCaseId] = useState("");
   const [caseStatus, setCaseStatus] = useState("");
   const [priority, setPriority] = useState("");
@@ -60,15 +60,17 @@ export default function Home() {
   }, [processing]);
 
   return (
-    <main className="min-h-screen flex flex-col items-center justify-center bg-gray-100 p-8">
-      <div className="bg-white p-10 rounded-xl shadow-lg max-w-2xl w-full text-center">
-        <h1 className="text-5xl font-bold text-black mb-4">City-Agent</h1>
+    <main className="min-h-screen flex flex-col items-center justify-center bg-slate-50 p-8">
+      <div className="bg-white p-10 rounded-2xl shadow-2xl border border-slate-200 max-w-4xl w-full text-center">
+        <h1 className="text-5xl font-bold text-blue-800 tracking-tight mb-4">
+          City-Agent
+        </h1>
 
-        <p className="text-xl text-gray-600 mb-6">
+        <p className="text-xl text-slate-600 mb-6 font-medium">
           Autonomous Municipal Workforce for Aging Societies
         </p>
 
-        <p className="text-gray-500 mb-8">
+        <p className="text-slate-500 mb-8">
           Upload municipal documents and let AI agents classify, validate, route and process them automatically.
         </p>
 
@@ -93,11 +95,11 @@ export default function Home() {
               });
 
               if (!response.ok) {
-                setUploadStatus("Upload Failed ❌");
+                setUploadStatus("Upload Failed");
                 return;
               }
 
-              setUploadStatus("Upload Successful ✅");
+              setUploadStatus("Upload Successful");
 
               const analyzeFormData = new FormData();
               analyzeFormData.append("file", file);
@@ -108,7 +110,7 @@ export default function Home() {
               });
 
               if (!analysisResponse.ok) {
-                setUploadStatus("Analysis Failed ❌");
+                setUploadStatus("Analysis Failed");
                 return;
               }
 
@@ -119,14 +121,25 @@ export default function Home() {
               setValidation(analysisData.validation || "");
               setRecommendation(analysisData.recommendation || "");
               setMatchedKeywords(analysisData.matched_keywords || []);
-              setAffectedDepartments(analysisData.affected_departments || []);
               setWorkflowGraph([
                 analysisData.department,
                 ...(analysisData.affected_departments || [])
               ]);
+              setAffectedDepartments(analysisData.affected_departments || []);
               setGeneratedTasks(analysisData.generated_tasks || []);
               setVisitsSaved(analysisData.affected_departments?.length || 0);
               setTimeSaved(`${(analysisData.affected_departments?.length || 0) * 2} Days`);
+              setActiveCases(caseQueue.length + 1);
+
+              setAutoProcessed(caseQueue.length + 1);
+
+              setDepartmentsCoordinated(
+                (analysisData.affected_departments?.length || 0) + 1
+              );
+
+              setHoursSaved(
+                (analysisData.generated_tasks?.length || 0) * 2
+              );
               setTaskStatuses(analysisData.task_statuses || []);
               setFileName(name);
               setCaseId(
@@ -159,48 +172,48 @@ export default function Home() {
               setProcessing(true);
             } catch (error) {
               console.error("UPLOAD ERROR:", error);
-              setUploadStatus("Backend Not Reachable ❌");
+              setUploadStatus("Backend Not Reachable");
             }
           }}
         />
 
         <button
           onClick={() => document.getElementById("fileUpload")?.click()}
-          className="bg-blue-600 text-white px-6 py-3 rounded-lg text-lg hover:bg-blue-700 mb-8"
+          className="bg-blue-600 text-white px-6 py-3 rounded-xl text-lg hover:bg-blue-700 mb-8 transition"
         >
           Upload Document
         </button>
 
         {processing ? (
-          <div className="mt-6 bg-yellow-100 p-6 rounded-lg">
-            <h2 className="text-xl font-bold text-black mb-4">Agent Activity</h2>
+          <div className="mt-6 bg-yellow-100 p-6 rounded-xl shadow-sm">
+            <h2 className="text-xl font-bold text-slate-800 mb-4">Agent Activity</h2>
 
-            <div className="space-y-3 text-black">
+            <div className="space-y-3 text-slate-800">
               {currentStep > 1 ? (
-                <p>✅ Document Agent Complete</p>
+                <p> Document Agent Complete</p>
               ) : currentStep === 1 ? (
-                <p>⏳ Document Agent Processing...</p>
+                <p> Document Agent Processing...</p>
               ) : null}
 
               {currentStep > 2 ? (
-                <p>✅ Extraction Agent Complete</p>
+                <p> Extraction Agent Complete</p>
               ) : currentStep === 2 ? (
-                <p>⏳ Extraction Agent Processing...</p>
+                <p> Extraction Agent Processing...</p>
               ) : null}
 
               {currentStep > 3 ? (
-                <p>✅ Validation Agent Complete</p>
+                <p> Validation Agent Complete</p>
               ) : currentStep === 3 ? (
-                <p>⏳ Validation Agent Processing...</p>
+                <p> Validation Agent Processing...</p>
               ) : null}
 
               {currentStep > 4 ? (
-                <p>✅ Department Agent Complete</p>
+                <p> Department Agent Complete</p>
               ) : currentStep === 4 ? (
-                <p>⏳ Department Agent Processing...</p>
+                <p> Department Agent Processing...</p>
               ) : null}
 
-              {currentStep === 5 ? <p>⏳ Recommendation Agent Processing...</p> : null}
+              {currentStep === 5 ? <p> Recommendation Agent Processing...</p> : null}
             </div>
           </div>
         ) : fileName ? (
@@ -212,34 +225,34 @@ export default function Home() {
 
               <p className="text-green-700 font-semibold mb-4">{uploadStatus}</p>
 
-              <div className="bg-white border-2 border-blue-200 p-6 rounded-lg mt-6 text-left">
+              <div className="bg-blue-50 border border-blue-200 p-6 rounded-xl shadow-sm mt-6 text-left text-slate-700">
 
-                <h2 className="text-black font-bold text-xl mb-4">
-                  Case Information
-                </h2>
+  <h2 className="text-slate-800 font-semibold text-xl mb-4">
+    Case Information
+  </h2>
 
-                <p>📄 Case ID: {caseId}</p>
+  <p>Case ID: {caseId}</p>
 
-                <p>📌 Status: {caseStatus}</p>
+  <p>Status: {caseStatus}</p>
 
-                <p>⚠️ Priority: {priority}</p>
+  <p>Priority: {priority}</p>
 
-                <p>🏢 Assigned Department: {department}</p>
+  <p>Assigned Department: {department}</p>
 
-              </div>
+</div>
 
-              <div className="bg-orange-50 p-6 rounded-lg mt-6 text-left">
+              <div className="bg-orange-50 p-6 rounded-xl shadow-sm mt-6 text-left">
 
-                <h2 className="text-black font-bold text-xl mb-4">
+                <h2 className="text-slate-800 font-bold text-xl mb-4">
                   Municipal Case Queue
                 </h2>
 
-                <div className="space-y-2 text-black">
+                <div className="space-y-2 text-slate-800">
 
                   {caseQueue.map((item, index) => (
 
                     <p key={index}>
-                      📄 {item.id} - {item.status}
+                      Case {item.id} - {item.status}
                     </p>
 
                   ))}
@@ -254,17 +267,17 @@ export default function Home() {
 
 
 
-              <div className="bg-gray-100 p-6 rounded-lg text-left">
-                <h2 className="text-black font-bold text-xl mb-4">Agent Activity</h2>
+              <div className="bg-gray-100 p-6 p-6 rounded-xl shadow-sm text-left">
+                <h2 className="text-slate-800 font-bold text-xl mb-4">Agent Activity</h2>
 
-                <div className="space-y-3 text-black">
-                  <p>✅ Document Agent: Document classified successfully</p>
+                <div className="space-y-3 text-slate-800">
+                  <p> Document Agent: Document classified successfully</p>
 
-                  <p>✅ Extraction Agent: {summary}</p>
+                  <p> Extraction Agent: {summary}</p>
 
-                  <p>✅ Validation Agent: {validation}</p>
+                  <p> Validation Agent: {validation}</p>
 
-                  <p>✅ Department Agent: Routed to {department}</p>
+                  <p> Department Agent: Routed to {department}</p>
 
                   {matchedKeywords.length > 0 && (
                     <div className="ml-4 mt-2 text-sm text-gray-600">
@@ -277,10 +290,10 @@ export default function Home() {
                     </div>
                   )}
 
-                  <p>✅ Recommendation Agent: {recommendation}</p>
+                  <p> Recommendation Agent: {recommendation}</p>
 
                   <div className="mt-4">
-                    <p className="font-semibold">✅ Workforce Coordinator</p>
+                    <p className="font-semibold"> Workforce Coordinator</p>
 
                     <div className="ml-4 mt-2">
                       <p>Affected Departments:</p>
@@ -297,19 +310,7 @@ export default function Home() {
 
                           <li key={index}>
 
-                            {item.status === "Completed" && "🟢"}
-
-                            {item.status === "In Progress" && "🟡"}
-
-                            {item.status === "Queued" && "🔵"}
-
-                            {" "}
-
-                            {item.task}
-
-                            {" - "}
-
-                            {item.status}
+                            [{item.status}] {item.task}
 
                           </li>
 
@@ -321,29 +322,29 @@ export default function Home() {
                 </div>
               </div>
 
-<div className="bg-indigo-50 p-6 rounded-lg mt-6 text-left">
+<div className="bg-indigo-50 p-6 p-6 rounded-xl shadow-sm mt-6 text-left">
 
-  <h2 className="text-black font-bold text-xl mb-4">
+  <h2 className="text-slate-800 font-bold text-xl mb-4">
     Municipal Workforce Overview
   </h2>
 
   <div className="space-y-2 text-black">
 
-    <p>📄 Active Cases: {activeCases}</p>
+    <p> Active Cases: {activeCases}</p>
 
-    <p>🤖 Auto-Processed Today: {autoProcessed}</p>
+    <p> Auto-Processed Today: {autoProcessed}</p>
 
-    <p>🏢 Departments Coordinated: {departmentsCoordinated}</p>
+    <p> Departments Coordinated: {departmentsCoordinated}</p>
 
-    <p>⏳ Hours Saved: {hoursSaved}</p>
+    <p> Hours Saved: {hoursSaved}</p>
 
-    <p>🚶 Citizen Visits Avoided: {visitsSaved}</p>
+    <p> Citizen Visits Avoided: {visitsSaved}</p>
 
   </div>
 
-  <div className="bg-purple-50 p-6 rounded-lg mt-6 text-left">
+  <div className="bg-purple-50 p-6 p-6 rounded-xl shadow-sm mt-6 text-left">
 
-    <h2 className="text-black font-bold text-xl mb-4">
+    <h2 className="text-slate-800 font-bold text-xl mb-4">
       Workflow Visualization
     </h2>
 
@@ -375,26 +376,26 @@ export default function Home() {
 
 </div>
 
-              <div className="bg-blue-50 p-6 rounded-lg mt-6 text-left">
-                <h2 className="text-black font-bold text-xl mb-4">
+              <div className="bg-blue-50 p-6 rounded-xl shadow-sm mt-6 text-left">
+                <h2 className="text-slate-800 font-bold text-xl mb-4">
                   Municipal Operations Dashboard
                 </h2>
 
-                <div className="space-y-2 text-black">
-                  <p>🏢 Departments Impacted: {affectedDepartments.length}</p>
-                  <p>📋 Generated Tasks: {generatedTasks.length}</p>
-                  <p>🚶 Citizen Visits Saved: {visitsSaved}</p>
-                  <p>⏳ Processing Time Saved: {timeSaved}</p>
-                  <p>🎯 Auto-Routed Successfully</p>
+                <div className="space-y-2 text-slate-800">
+                  <p> Departments Impacted: {affectedDepartments.length}</p>
+                  <p> Generated Tasks: {generatedTasks.length}</p>
+                  <p> Citizen Visits Saved: {visitsSaved}</p>
+                  <p> Processing Time Saved: {timeSaved}</p>
+                  <p> Auto-Routed Successfully</p>
                 </div>
               </div>
 
-              <div className="bg-green-50 p-6 rounded-lg mt-6 text-left">
-                <h2 className="text-black font-bold text-xl mb-4">
+              <div className="bg-green-50 p-6 rounded-xl shadow-sm mt-6 text-left">
+                <h2 className="text-slate-800 font-bold text-xl mb-4">
                   Citizen Journey Timeline
                 </h2>
 
-                <div className="space-y-2 text-black">
+                <div className="space-y-2 text-slate-800">
                   <p>09:01 • Document Uploaded</p>
                   <p>09:02 • Document Classified</p>
                   <p>09:02 • Department Routed</p>
@@ -404,8 +405,8 @@ export default function Home() {
               </div>
             </div>
 
-            <div className="text-left text-black mt-6">
-              <h2 className="font-semibold mb-3 text-black">Supported Forms</h2>
+            <div className="text-left text-slate-800 mt-6">
+              <h2 className="font-semibold mb-3 text-slate-800">Supported Forms</h2>
 
               <ul className="space-y-2 text-gray-700">
                 <li>✓ Residence Registration</li>
