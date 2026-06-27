@@ -6,6 +6,12 @@ City-Agent is an AI-powered municipal operations platform designed to automate d
 
 The system analyzes uploaded municipal documents, classifies them, validates their contents, routes them to the appropriate department, generates follow-up tasks, and visualizes the complete workflow through an interactive dashboard.
 
+## Live Demo
+
+Frontend: https://city-agent-eight.vercel.app
+
+Backend API: https://divyanshi80405-city-agent-api.hf.space
+
 ## Problem Statement
 
 Municipal governments process thousands of applications every day, including residency registrations, tax assessments, utility requests, permits, and business licenses. These processes often require manual review, inter-department communication, and repetitive administrative work, leading to delays and increased workload.
